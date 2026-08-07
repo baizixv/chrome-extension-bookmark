@@ -1,7 +1,13 @@
-import type { AppSettings, BookmarkLocation, LocationTarget } from "./types";
+import type {
+  AppSettings,
+  BookmarkLocation,
+  LanguagePreference,
+  LocationTarget,
+} from "./types";
 
 const DEFAULT_SETTINGS: AppSettings = {
   location: { folderId: "", target: { type: "top" } },
+  language: "system",
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -43,14 +49,22 @@ function migrateLegacyTarget(raw: Record<string, unknown>): LocationTarget {
   return { type: "top" };
 }
 
+function parseLanguage(value: unknown): LanguagePreference {
+  return value === "zh-CN" || value === "en" || value === "system"
+    ? value
+    : "system";
+}
+
 export function migrateSettings(raw: unknown): AppSettings {
   if (!isRecord(raw)) return DEFAULT_SETTINGS;
+  const language = parseLanguage(raw.language);
   const currentLocation = parseCurrentLocation(raw.location);
-  if (currentLocation) return { location: currentLocation };
+  if (currentLocation) return { location: currentLocation, language };
   return {
     location: {
       folderId: typeof raw.folderId === "string" ? raw.folderId : "",
       target: migrateLegacyTarget(raw),
     },
+    language,
   };
 }

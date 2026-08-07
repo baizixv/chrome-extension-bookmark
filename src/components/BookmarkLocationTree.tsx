@@ -4,13 +4,15 @@ import type {
   BookmarkNode,
   LocationTarget,
 } from "../domain/types";
-import { getFolderTitle } from "../domain/bookmark-tree";
+import type { Messages } from "../i18n";
+import { getLocalizedFolderTitle } from "../i18n";
 import styles from "./BookmarkLocationTree.module.css";
 
 interface BookmarkLocationTreeProps {
   root: BookmarkNode | null;
   location: BookmarkLocation;
   summary: string;
+  messages: Messages;
   expandedFolderIds: ReadonlySet<string>;
   onSelect: (location: BookmarkLocation) => void;
   onToggle: (folderId: string) => void;
@@ -85,6 +87,7 @@ function LocationOption({
 interface FolderNodeProps {
   node: BookmarkNode;
   location: BookmarkLocation;
+  messages: Messages;
   expandedFolderIds: ReadonlySet<string>;
   onSelect: (location: BookmarkLocation) => void;
   onToggle: (folderId: string) => void;
@@ -93,6 +96,7 @@ interface FolderNodeProps {
 function FolderNode({
   node,
   location,
+  messages,
   expandedFolderIds,
   onSelect,
   onToggle,
@@ -100,6 +104,7 @@ function FolderNode({
   const children = node.children || [];
   const expanded = children.length > 0 && expandedFolderIds.has(node.id);
   const topTarget: LocationTarget = { type: "top" };
+  const folderTitle = getLocalizedFolderTitle(node, messages);
 
   return (
     <li className={styles.node} role="none">
@@ -108,7 +113,11 @@ function FolderNode({
           <button
             className={styles.toggle}
             type="button"
-            aria-label={`${expanded ? "折叠" : "展开"}${getFolderTitle(node)}`}
+            aria-label={
+              expanded
+                ? messages.collapseFolder(folderTitle)
+                : messages.expandFolder(folderTitle)
+            }
             aria-expanded={expanded}
             onClick={() => onToggle(node.id)}
           >
@@ -125,8 +134,8 @@ function FolderNode({
         <LocationOption
           folderId={node.id}
           target={topTarget}
-          title={getFolderTitle(node)}
-          detail="保存到此文件夹顶部"
+          title={folderTitle}
+          detail={messages.saveFolderTop}
           type="folder"
           selected={isSelected(location, node.id, topTarget)}
           onSelect={onSelect}
@@ -144,8 +153,8 @@ function FolderNode({
                   <LocationOption
                     folderId={node.id}
                     target={{ type: "before", bookmarkId: child.id }}
-                    title={child.title || "未命名书签"}
-                    detail="插入到此书签之前"
+                    title={child.title || messages.unnamedBookmark}
+                    detail={messages.insertBefore}
                     type="bookmark"
                     selected={isSelected(location, node.id, {
                       type: "before",
@@ -160,6 +169,7 @@ function FolderNode({
                 key={child.id}
                 node={child}
                 location={location}
+                messages={messages}
                 expandedFolderIds={expandedFolderIds}
                 onSelect={onSelect}
                 onToggle={onToggle}
@@ -172,8 +182,8 @@ function FolderNode({
               <LocationOption
                 folderId={node.id}
                 target={{ type: "bottom" }}
-                title="放在此文件夹末尾"
-                detail="排在当前目录最后"
+                title={messages.placeAtFolderEnd}
+                detail={messages.folderEndDetail}
                 type="position"
                 selected={isSelected(location, node.id, { type: "bottom" })}
                 onSelect={onSelect}
@@ -190,6 +200,7 @@ export function BookmarkLocationTree({
   root,
   location,
   summary,
+  messages,
   expandedFolderIds,
   onSelect,
   onToggle,
@@ -201,14 +212,19 @@ export function BookmarkLocationTree({
         {summary}
       </div>
       <div className={styles.picker}>
-        <div className={styles.heading}>选择文件夹或书签位置</div>
+        <div className={styles.heading}>{messages.locationHeading}</div>
         {rootFolders.length ? (
-          <ul className={styles.tree} role="tree" aria-label="书签保存位置">
+          <ul
+            className={styles.tree}
+            role="tree"
+            aria-label={messages.saveLocation}
+          >
             {rootFolders.map((node) => (
               <FolderNode
                 key={node.id}
                 node={node}
                 location={location}
+                messages={messages}
                 expandedFolderIds={expandedFolderIds}
                 onSelect={onSelect}
                 onToggle={onToggle}
@@ -216,7 +232,7 @@ export function BookmarkLocationTree({
             ))}
           </ul>
         ) : (
-          <p className={styles.empty}>没有可用的书签文件夹</p>
+          <p className={styles.empty}>{messages.noFolders}</p>
         )}
       </div>
     </>

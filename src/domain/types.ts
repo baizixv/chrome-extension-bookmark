@@ -25,11 +25,20 @@ export interface BookmarkLocation {
   target: LocationTarget;
 }
 
+export type LanguagePreference = "system" | "zh-CN" | "en";
+
 export interface AppSettings {
   location: BookmarkLocation;
+  language: LanguagePreference;
 }
 
 export interface BookmarkReference {
   folderId: string;
   title: string;
+}
+
+export interface LocationDescription {
+  path: string;
+  targetType: LocationTarget["type"];
+  bookmarkTitle?: string;
 }

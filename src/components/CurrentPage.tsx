@@ -1,24 +1,28 @@
 import { Globe2 } from "lucide-react";
 import { useState } from "react";
 import type { ActivePage } from "../domain/types";
+import type { Messages } from "../i18n";
 import styles from "./CurrentPage.module.css";
 
 interface CurrentPageProps {
   page: ActivePage | null;
   loading: boolean;
+  messages: Messages;
 }
 
-export function CurrentPage({ page, loading }: CurrentPageProps) {
+export function CurrentPage({ page, loading, messages }: CurrentPageProps) {
   const [faviconFailed, setFaviconFailed] = useState(false);
   const faviconUrl = page?.favIconUrl;
   const showFavicon = Boolean(faviconUrl?.startsWith("http")) && !faviconFailed;
   const title = loading
-    ? "正在读取当前页面..."
-    : page?.title || "没有可用的当前页面";
-  const url = loading ? "请稍候" : page?.url || "请切换到普通网页后重试";
+    ? messages.loadingPage
+    : page
+      ? page.title || messages.unnamedPage
+      : messages.noPage;
+  const url = loading ? messages.wait : page?.url || messages.switchPage;
 
   return (
-    <section className={styles.preview} aria-label="当前页面">
+    <section className={styles.preview} aria-label={messages.currentPage}>
       <div className={styles.favicon} aria-hidden="true">
         {showFavicon ? (
           <img src={faviconUrl} alt="" onError={() => setFaviconFailed(true)} />

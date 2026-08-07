@@ -4,10 +4,14 @@ export async function getActivePage(): Promise<ActivePage | null> {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab) return null;
   return {
-    title: tab.title || "未命名页面",
+    title: tab.title || "",
     url: tab.url || "",
     favIconUrl: tab.favIconUrl,
   };
+}
+
+export function getSystemLanguage(): string {
+  return chrome.i18n.getUILanguage();
 }
 
 export async function openBookmarkManager(): Promise<void> {

@@ -2,6 +2,9 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { BookmarkLocationTree } from "../src/components/BookmarkLocationTree";
 import type { BookmarkNode } from "../src/domain/types";
+import { getMessages } from "../src/i18n";
+
+const messages = getMessages("zh-CN");
 
 const root: BookmarkNode = {
   id: "0",
@@ -32,6 +35,7 @@ describe("BookmarkLocationTree", () => {
         root={root}
         location={{ folderId: "1", target: { type: "top" } }}
         summary="Bookmarks Bar · 顶部"
+        messages={messages}
         expandedFolderIds={new Set(["1"])}
         onSelect={vi.fn()}
         onToggle={vi.fn()}
@@ -49,6 +53,7 @@ describe("BookmarkLocationTree", () => {
         root={root}
         location={{ folderId: "1", target: { type: "top" } }}
         summary="Bookmarks Bar · 顶部"
+        messages={messages}
         expandedFolderIds={new Set(["1"])}
         onSelect={onSelect}
         onToggle={vi.fn()}
@@ -70,6 +75,7 @@ describe("BookmarkLocationTree", () => {
         root={root}
         location={{ folderId: "1", target: { type: "top" } }}
         summary="Bookmarks Bar · 顶部"
+        messages={messages}
         expandedFolderIds={new Set(["1"])}
         onSelect={onSelect}
         onToggle={onToggle}
@@ -94,6 +100,7 @@ describe("BookmarkLocationTree", () => {
         root={root}
         location={{ folderId: "1", target: { type: "top" } }}
         summary="Bookmarks Bar · 顶部"
+        messages={messages}
         expandedFolderIds={new Set(["1"])}
         onSelect={vi.fn()}
         onToggle={onToggle}

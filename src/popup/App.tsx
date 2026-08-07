@@ -2,10 +2,11 @@ import { BookmarkCheck, List, RefreshCw, Save } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BookmarkLocationTree } from "../components/BookmarkLocationTree";
 import { CurrentPage } from "../components/CurrentPage";
+import { SettingsMenu } from "../components/SettingsMenu";
 import {
   flattenFolders,
   getDefaultLocation,
-  getLocationSummary,
+  getLocationDescription,
   indexBookmarks,
   isBookmarksBar,
   validateLocation,
@@ -20,7 +21,14 @@ import type {
   ActivePage,
   BookmarkLocation,
   BookmarkNode,
+  LanguagePreference,
 } from "../domain/types";
+import {
+  formatLocationSummary,
+  getLocalizedFolderTitle,
+  getMessages,
+  resolveLanguage,
+} from "../i18n";
 import {
   createPageBookmark,
   getBookmarkTree,
@@ -28,50 +36,86 @@ import {
   moveBookmark,
 } from "../services/bookmarks";
 import { loadSettings, saveSettings } from "../services/storage";
-import { getActivePage, openBookmarkManager } from "../services/tabs";
+import {
+  getActivePage,
+  getSystemLanguage,
+  openBookmarkManager,
+} from "../services/tabs";
 import styles from "./App.module.css";
-
-interface Status {
-  message: string;
-  type: "success" | "error" | "";
-}
 
 const EMPTY_LOCATION: BookmarkLocation = {
   folderId: "",
   target: { type: "top" },
 };
 
-function getErrorMessage(error: unknown): string {
+type StatusKey =
+  | ""
+  | "readFailed"
+  | "locationSaveFailed"
+  | "pageUnavailable"
+  | "movedExisting"
+  | "alreadyPositioned"
+  | "savedTo"
+  | "invalidUrl"
+  | "saveFailed";
+
+interface Status {
+  key: StatusKey;
+  type: "success" | "error" | "";
+  path?: string;
+}
+
+function getErrorStatusKey(error: unknown): StatusKey {
   const message = error instanceof Error ? error.message : String(error);
-  return message.includes("Invalid URL")
-    ? "此页面类型不支持收藏为书签"
-    : "保存失败，请确认目标位置仍然存在";
+  return message.includes("Invalid URL") ? "invalidUrl" : "saveFailed";
 }
 
 export function App() {
   const [page, setPage] = useState<ActivePage | null>(null);
   const [root, setRoot] = useState<BookmarkNode | null>(null);
   const [location, setLocation] = useState<BookmarkLocation>(EMPTY_LOCATION);
+  const [language, setLanguage] = useState<LanguagePreference>("system");
   const [expandedFolderIds, setExpandedFolderIds] = useState<Set<string>>(
     new Set(),
   );
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [status, setStatus] = useState<Status>({ message: "", type: "" });
+  const [status, setStatus] = useState<Status>({ key: "", type: "" });
 
-  const folders = useMemo(() => (root ? flattenFolders(root) : []), [root]);
+  const systemLanguage = useMemo(getSystemLanguage, []);
+  const uiLanguage = resolveLanguage(language, systemLanguage);
+  const messages = getMessages(uiLanguage);
+  const folders = useMemo(
+    () =>
+      root
+        ? flattenFolders(root, [], (node) =>
+            getLocalizedFolderTitle(node, messages),
+          )
+        : [],
+    [messages, root],
+  );
   const references = useMemo(
     () => (root ? indexBookmarks(root) : new Map()),
     [root],
   );
   const summary = useMemo(
-    () => getLocationSummary(folders, references, location),
-    [folders, references, location],
+    () =>
+      formatLocationSummary(
+        getLocationDescription(folders, references, location),
+        messages,
+      ),
+    [folders, location, messages, references],
   );
+  const statusMessage = useMemo(() => {
+    if (!status.key) return "";
+    if (status.key === "savedTo")
+      return messages.savedTo(status.path || messages.targetFolder);
+    return messages[status.key];
+  }, [messages, status]);
 
   const initialize = useCallback(async () => {
     setLoading(true);
-    setStatus({ message: "", type: "" });
+    setStatus({ key: "", type: "" });
     try {
       const [activePage, tree, storedSettings] = await Promise.all([
         getActivePage(),
@@ -90,11 +134,15 @@ export function App() {
       setPage(activePage);
       setRoot(nextRoot);
       setLocation(nextLocation);
+      setLanguage(storedSettings.language);
       setExpandedFolderIds(new Set(bookmarksBar ? [bookmarksBar.id] : []));
-      await saveSettings({ location: nextLocation });
+      await saveSettings({
+        location: nextLocation,
+        language: storedSettings.language,
+      });
     } catch (error) {
       console.error(error);
-      setStatus({ message: "读取书签失败，请刷新后重试", type: "error" });
+      setStatus({ key: "readFailed", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -104,14 +152,29 @@ export function App() {
     void initialize();
   }, [initialize]);
 
-  const handleSelect = useCallback((nextLocation: BookmarkLocation) => {
-    setLocation(nextLocation);
-    setStatus({ message: "", type: "" });
-    void saveSettings({ location: nextLocation }).catch((error) => {
-      console.error(error);
-      setStatus({ message: "保存位置设置失败", type: "error" });
-    });
-  }, []);
+  const handleSelect = useCallback(
+    (nextLocation: BookmarkLocation) => {
+      setLocation(nextLocation);
+      setStatus({ key: "", type: "" });
+      void saveSettings({ location: nextLocation, language }).catch((error) => {
+        console.error(error);
+        setStatus({ key: "locationSaveFailed", type: "error" });
+      });
+    },
+    [language],
+  );
+
+  const handleLanguageChange = useCallback(
+    (nextLanguage: LanguagePreference) => {
+      setLanguage(nextLanguage);
+      setStatus({ key: "", type: "" });
+      void saveSettings({ location, language: nextLanguage }).catch((error) => {
+        console.error(error);
+        setStatus({ key: "locationSaveFailed", type: "error" });
+      });
+    },
+    [location],
+  );
 
   const handleToggle = useCallback((folderId: string) => {
     setExpandedFolderIds((current) => {
@@ -124,12 +187,12 @@ export function App() {
 
   const handleSave = async () => {
     if (!page?.url || !location.folderId) {
-      setStatus({ message: "当前页面或目标文件夹不可用", type: "error" });
+      setStatus({ key: "pageUnavailable", type: "error" });
       return;
     }
 
     setSaving(true);
-    setStatus({ message: "", type: "" });
+    setStatus({ key: "", type: "" });
     try {
       const children = await getFolderChildren(location.folderId);
       const position = resolvePosition(children, location.target);
@@ -146,26 +209,27 @@ export function App() {
         );
         if (moveIndex !== existingIndex) {
           await moveBookmark(duplicate.id, location.folderId, moveIndex);
-          setStatus({ message: "已将已有书签移动到新位置", type: "success" });
+          setStatus({ key: "movedExisting", type: "success" });
         } else {
-          setStatus({ message: "这个书签已经在指定位置", type: "success" });
+          setStatus({ key: "alreadyPositioned", type: "success" });
         }
       } else {
         await createPageBookmark(location.folderId, position.index, page);
         const folder = folders.find((item) => item.id === location.folderId);
         setStatus({
-          message: `已保存到「${folder?.path || "目标文件夹"}」`,
+          key: "savedTo",
           type: "success",
+          path: folder?.path || messages.targetFolder,
         });
       }
 
       setLocation(resolvedLocation);
-      await saveSettings({ location: resolvedLocation });
+      await saveSettings({ location: resolvedLocation, language });
       const [nextRoot] = await getBookmarkTree();
       if (nextRoot) setRoot(nextRoot);
     } catch (error) {
       console.error(error);
-      setStatus({ message: getErrorMessage(error), type: "error" });
+      setStatus({ key: getErrorStatusKey(error), type: "error" });
     } finally {
       setSaving(false);
     }
@@ -182,40 +246,48 @@ export function App() {
             <BookmarkCheck size={21} strokeWidth={1.9} />
           </div>
           <div>
-            <h1>书签快存</h1>
-            <p>保存此刻，稍后继续</p>
+            <h1>{messages.brandName}</h1>
+            <p>{messages.tagline}</p>
           </div>
         </div>
-        <button
-          className={styles.iconButton}
-          type="button"
-          aria-label="刷新书签文件夹"
-          title="刷新书签文件夹"
-          onClick={() => void initialize()}
-          disabled={loading}
-        >
-          <RefreshCw size={16} strokeWidth={2} aria-hidden="true" />
-        </button>
+        <div className={styles.topbarActions}>
+          <SettingsMenu
+            language={language}
+            messages={messages}
+            onLanguageChange={handleLanguageChange}
+          />
+          <button
+            className={styles.iconButton}
+            type="button"
+            aria-label={messages.refresh}
+            title={messages.refresh}
+            onClick={() => void initialize()}
+            disabled={loading}
+          >
+            <RefreshCw size={16} strokeWidth={2} aria-hidden="true" />
+          </button>
+        </div>
       </header>
 
-      <CurrentPage page={page} loading={loading} />
+      <CurrentPage page={page} loading={loading} messages={messages} />
 
       <section className={styles.locationSection}>
         <div className={styles.fieldLabelRow}>
-          <label>保存位置</label>
+          <label>{messages.saveLocation}</label>
           <button
             className={styles.textButton}
             type="button"
             onClick={() => void openBookmarkManager()}
           >
             <List size={14} strokeWidth={1.8} aria-hidden="true" />
-            打开书签管理器
+            {messages.openManager}
           </button>
         </div>
         <BookmarkLocationTree
           root={root}
           location={location}
-          summary={loading ? "正在读取..." : summary}
+          summary={loading ? messages.loading : summary}
+          messages={messages}
           expandedFolderIds={expandedFolderIds}
           onSelect={handleSelect}
           onToggle={handleToggle}
@@ -229,14 +301,14 @@ export function App() {
         onClick={() => void handleSave()}
       >
         <Save size={17} strokeWidth={2} aria-hidden="true" />
-        <span>{saving ? "正在保存..." : "保存到书签"}</span>
+        <span>{saving ? messages.saving : messages.save}</span>
       </button>
       <p
         className={`${styles.status} ${status.type === "error" ? styles.error : ""}`}
         role="status"
         aria-live="polite"
       >
-        {status.message}
+        {statusMessage}
       </p>
     </main>
   );

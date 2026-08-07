@@ -8,7 +8,8 @@
 - 在固定显示的树形位置框中合并选择文件夹和插入位置
 - 默认展开最常用的 Bookmarks Bar，其他目录可逐级展开、折叠
 - 单击文件夹保存到顶部，双击文件夹展开或折叠，点击书签则插入到该书签之前，也可选择目录末尾
-- 记住上次选择的完整保存位置，并兼容旧版配置迁移
+- 支持跟随系统、简体中文和 English，并使用 Chrome 标准 Manifest 本地化
+- 记住上次选择的完整保存位置和语言偏好，并兼容旧版配置迁移
 - 当前文件夹存在相同网址时，直接把已有书签移动到新位置
 - 支持直接打开 Chrome 书签管理器
 
@@ -46,9 +47,10 @@ npm run build
 ## 代码结构
 
 ```text
-public/              Manifest 等扩展静态资源
-src/components/      Popup 展示组件和递归书签树
+public/              Manifest、_locales 等扩展静态资源
+src/components/      Popup 展示组件、设置菜单和递归书签树
 src/domain/          书签树、位置计算和配置迁移等纯逻辑
+src/i18n/            类型化中英文 UI 词典与语言解析
 src/popup/           Popup 应用入口和流程编排
 src/services/        Chrome tabs、bookmarks、storage API 封装
 src/styles/          全局样式

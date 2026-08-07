@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   flattenFolders,
   getDefaultLocation,
-  getLocationSummary,
+  getLocationDescription,
   indexBookmarks,
   isBookmarksBar,
   validateLocation,
@@ -54,11 +54,15 @@ describe("bookmark tree", () => {
       "Bookmarks Bar / Plans",
     );
     expect(
-      getLocationSummary(folders, references, {
+      getLocationDescription(folders, references, {
         folderId: "10",
         target: { type: "before", bookmarkId: "100" },
       }),
-    ).toBe("Bookmarks Bar / Plans · 在「Tego Arc」之前");
+    ).toEqual({
+      path: "Bookmarks Bar / Plans",
+      targetType: "before",
+      bookmarkTitle: "Tego Arc",
+    });
   });
 
   it("falls back to folder top when a target bookmark disappears", () => {

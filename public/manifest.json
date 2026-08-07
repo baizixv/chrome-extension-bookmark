@@ -1,11 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "书签快存",
-  "version": "1.5.4",
-  "description": "将当前网页快速收藏到指定书签文件夹和位置。",
+  "name": "__MSG_extensionName__",
+  "version": "1.6.0",
+  "description": "__MSG_extensionDescription__",
+  "default_locale": "zh_CN",
   "permissions": ["bookmarks", "tabs", "storage"],
   "action": {
-    "default_title": "保存当前页面书签",
+    "default_title": "__MSG_actionTitle__",
     "default_popup": "popup.html"
   }
 }

@@ -4,7 +4,8 @@
 
 .topbar,
 .brandLockup,
-.fieldLabelRow {
+.fieldLabelRow,
+.topbarActions {
   display: flex;
   align-items: center;
 }
@@ -12,6 +13,10 @@
 .topbar {
   justify-content: space-between;
   margin-bottom: 14px;
+}
+
+.topbarActions {
+  gap: 7px;
 }
 
 .brandLockup {

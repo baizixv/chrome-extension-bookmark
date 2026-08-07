@@ -9,12 +9,14 @@ describe("settings migration", () => {
           folderId: "10",
           target: { type: "before", bookmarkId: "100" },
         },
+        language: "en",
       }),
     ).toEqual({
       location: {
         folderId: "10",
         target: { type: "before", bookmarkId: "100" },
       },
+      language: "en",
     });
   });
 
@@ -30,6 +32,7 @@ describe("settings migration", () => {
         folderId: "10",
         target: { type: "before", bookmarkId: "100" },
       },
+      language: "system",
     });
   });
 
@@ -39,12 +42,14 @@ describe("settings migration", () => {
         folderId: "10",
         target: { type: "before", bookmarkId: "100" },
       },
+      language: "system",
     });
   });
 
   it("migrates legacy bottom targets", () => {
     expect(migrateSettings({ folderId: "10", targetId: "bottom" })).toEqual({
       location: { folderId: "10", target: { type: "bottom" } },
+      language: "system",
     });
   });
 });

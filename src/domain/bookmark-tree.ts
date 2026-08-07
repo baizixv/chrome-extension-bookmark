@@ -3,16 +3,13 @@ import type {
   BookmarkNode,
   BookmarkReference,
   FolderInfo,
+  LocationDescription,
 } from "./types";
 
-const ROOT_LABELS: Record<string, string> = {
-  "Bookmarks bar": "书签栏",
-  "Other bookmarks": "其他书签",
-  "Mobile bookmarks": "移动书签",
-};
+export type FolderTitleResolver = (node: BookmarkNode) => string;
 
 export function getFolderTitle(node: BookmarkNode): string {
-  return ROOT_LABELS[node.title] || node.title || "未命名文件夹";
+  return node.title || "Untitled folder";
 }
 
 export function isBookmarksBar(
@@ -29,18 +26,19 @@ export function isBookmarksBar(
 export function flattenFolders(
   node: BookmarkNode,
   parentPath: string[] = [],
+  getTitle: FolderTitleResolver = getFolderTitle,
 ): FolderInfo[] {
   const result: FolderInfo[] = [];
   if (!node.url && node.id !== "0") {
-    const title = getFolderTitle(node);
+    const title = getTitle(node);
     const path = [...parentPath, title];
     result.push({ id: node.id, title, path: path.join(" / ") });
     for (const child of node.children || []) {
-      result.push(...flattenFolders(child, path));
+      result.push(...flattenFolders(child, path, getTitle));
     }
   } else {
     for (const child of node.children || []) {
-      result.push(...flattenFolders(child, parentPath));
+      result.push(...flattenFolders(child, parentPath, getTitle));
     }
   }
   return result;
@@ -64,7 +62,7 @@ export function indexBookmarks(
     if (child.url) {
       references.set(child.id, {
         folderId: node.id,
-        title: child.title || "未命名书签",
+        title: child.title || "",
       });
     } else {
       indexBookmarks(child, references);
@@ -98,17 +96,20 @@ export function validateLocation(
     : { folderId: location.folderId, target: { type: "top" } };
 }
 
-export function getLocationSummary(
+export function getLocationDescription(
   folders: FolderInfo[],
   references: Map<string, BookmarkReference>,
   location: BookmarkLocation,
-): string {
+): LocationDescription | null {
   const folder = folders.find((item) => item.id === location.folderId);
-  if (!folder) return "请选择保存位置";
-  if (location.target.type === "top") return `${folder.path} · 顶部`;
-  if (location.target.type === "bottom") return `${folder.path} · 末尾`;
+  if (!folder) return null;
+  if (location.target.type !== "before") {
+    return { path: folder.path, targetType: location.target.type };
+  }
   const bookmark = references.get(location.target.bookmarkId);
-  return bookmark
-    ? `${folder.path} · 在「${bookmark.title}」之前`
-    : `${folder.path} · 顶部`;
+  return {
+    path: folder.path,
+    targetType: bookmark ? "before" : "top",
+    bookmarkTitle: bookmark?.title,
+  };
 }

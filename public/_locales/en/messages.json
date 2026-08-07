@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "Bookmark Quick Save"
+  },
+  "extensionDescription": {
+    "message": "Save the current page to a specific bookmark folder and position."
+  },
+  "actionTitle": {
+    "message": "Save current page as bookmark"
+  }
+}
