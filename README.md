@@ -44,6 +44,19 @@ npm run build
 5. 选择本项目的 `dist/` 目录
 6. 将“书签快存”固定到工具栏
 
+## Chrome Web Store 发布
+
+发布注册信息、商店文案、权限说明、隐私表单答案和上传清单见：
+
+- [`docs/CHROME_WEB_STORE_PUBLISHING.md`](docs/CHROME_WEB_STORE_PUBLISHING.md)
+- [`PRIVACY.md`](PRIVACY.md)
+
+商店图标、截图和宣传图位于 `store-assets/`。更新 UI 后可以重新生成截图：
+
+```bash
+npm run store:capture
+```
+
 ## 代码结构
 
 ```text
@@ -53,6 +66,8 @@ src/domain/          书签树、位置计算和配置迁移等纯逻辑
 src/i18n/            类型化中英文 UI 词典与语言解析
 src/popup/           Popup 应用入口和流程编排
 src/services/        Chrome tabs、bookmarks、storage API 封装
+src/store-preview/   商店截图的真实 popup 预览与模拟数据
 src/styles/          全局样式
+store-assets/        商店图标、截图、宣传图和图标源文件
 tests/               领域逻辑和组件交互测试
 ```
