@@ -38,6 +38,11 @@ function getFolderTitle(node) {
   return labels[node.title] || node.title || "未命名文件夹";
 }
 
+function isBookmarksBar(node) {
+  const normalizedTitle = (node.title || "").trim().toLowerCase();
+  return node.id === "1" || normalizedTitle === "bookmarks bar" || normalizedTitle === "书签栏";
+}
+
 function flattenFolders(node, parentPath = []) {
   const result = [];
   if (node.url === undefined && node.id !== "0") {
@@ -261,7 +266,13 @@ async function selectLocation(folderId, targetId) {
 }
 
 function renderLocationTree(tree, resetExpansion = false) {
-  if (resetExpansion) expandedFolderIds.clear();
+  if (resetExpansion) {
+    expandedFolderIds.clear();
+    const bookmarksBar = (tree[0].children || []).find((node) =>
+      node.url === undefined && isBookmarksBar(node)
+    );
+    if (bookmarksBar) expandedFolderIds.add(bookmarksBar.id);
+  }
   folders = flattenFolders(tree[0]);
   bookmarkLocations.clear();
   indexBookmarkLocations(tree[0]);
@@ -276,7 +287,7 @@ function renderLocationTree(tree, resetExpansion = false) {
 
   const savedFolderExists = folders.some((folder) => folder.id === settings.folderId);
   if (!savedFolderExists) {
-    const bar = folders.find((folder) => folder.title === "书签栏");
+    const bar = folders.find(isBookmarksBar);
     settings.folderId = bar?.id || folders[0].id;
     settings.targetId = "top";
   }

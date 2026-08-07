@@ -240,10 +240,12 @@ label {
 }
 
 .location-summary {
-  max-width: 190px;
+  width: 100%;
+  margin: -1px 0 8px;
   overflow: hidden;
-  color: #9aa5ac;
-  font-weight: 400;
+  color: #7f8d97;
+  font-size: 11px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
