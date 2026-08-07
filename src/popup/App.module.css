@@ -1,0 +1,139 @@
+.shell {
+  padding: 16px 20px 12px;
+}
+
+.topbar,
+.brandLockup,
+.fieldLabelRow {
+  display: flex;
+  align-items: center;
+}
+
+.topbar {
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.brandLockup {
+  gap: 11px;
+}
+
+.brandMark {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  color: #fff;
+  background: #e36d4e;
+  border-radius: 8px;
+}
+
+.brandLockup h1 {
+  margin: 0 0 2px;
+  color: #182633;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.brandLockup p {
+  margin: 0;
+  color: #81909d;
+  font-size: 11px;
+}
+
+.iconButton {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  place-items: center;
+  color: #71808c;
+  background: transparent;
+  border: 1px solid #dfe4e8;
+  border-radius: 8px;
+}
+
+.iconButton:hover:not(:disabled) {
+  color: #e36d4e;
+  background: #fff;
+  border-color: #e6a18d;
+}
+
+.iconButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.locationSection {
+  margin-bottom: 15px;
+}
+
+.fieldLabelRow {
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.fieldLabelRow label {
+  color: #40515e;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.textButton {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  color: #6d7d87;
+  background: transparent;
+  border: 0;
+  font-size: 11px;
+}
+
+.textButton:hover {
+  color: #d96447;
+}
+
+.saveButton {
+  display: flex;
+  width: 100%;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #fff;
+  background: #d96447;
+  border: 0;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 650;
+  transition:
+    background 120ms ease,
+    transform 120ms ease;
+}
+
+.saveButton:hover:not(:disabled) {
+  background: #c9573b;
+}
+
+.saveButton:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.saveButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+
+.status {
+  min-height: 16px;
+  margin: 8px 0 0;
+  color: #4c9a91;
+  font-size: 11px;
+  text-align: center;
+}
+
+.error {
+  color: #c55347;
+}

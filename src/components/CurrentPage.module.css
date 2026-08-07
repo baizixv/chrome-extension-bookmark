@@ -1,0 +1,53 @@
+.preview {
+  display: flex;
+  min-height: 62px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px 13px;
+  background: #fff;
+  border: 1px solid #e6eaed;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgb(34 48 60 / 4%);
+}
+
+.favicon {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  place-items: center;
+  color: #4c9a91;
+  background: #e7f3f0;
+  border-radius: 8px;
+}
+
+.favicon img {
+  width: 19px;
+  height: 19px;
+  border-radius: 4px;
+}
+
+.copy {
+  min-width: 0;
+}
+
+.copy strong,
+.copy span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.copy strong {
+  margin-bottom: 4px;
+  color: #2a3946;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.copy span {
+  color: #8b98a2;
+  font-size: 11px;
+}

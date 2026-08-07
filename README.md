@@ -1,23 +1,56 @@
 # 书签快存
 
-一个用于 Chrome 的 Manifest V3 书签管理扩展。点击浏览器工具栏中的扩展图标，可以直接从同一个树形列表中选择目标文件夹和书签插入位置。
+一个使用 React、TypeScript 和 Vite 构建的 Chrome Manifest V3 扩展。它将目标文件夹和插入位置合并到同一棵书签树中，用一次选择完成当前页面的收藏。
 
 ## 功能
 
 - 自动读取当前活动标签页的标题、网址和网站图标
 - 在固定显示的树形位置框中合并选择文件夹和插入位置
-- 文件夹树可逐级展开、折叠，默认展开最常用的书签栏
+- 默认展开最常用的 Bookmarks Bar，其他目录可逐级展开、折叠
 - 点击文件夹保存到顶部，点击书签插入到该书签之前，也可选择文件夹末尾
-- 记住上次选择的完整保存位置
+- 记住上次选择的完整保存位置，并兼容旧版配置迁移
 - 当前文件夹存在相同网址时，直接把已有书签移动到新位置
 - 支持直接打开 Chrome 书签管理器
 
-## 安装
+## 开发
 
-1. 打开 Chrome，访问 `chrome://extensions/`
-2. 打开右上角的“开发者模式”
-3. 点击“加载已解压的扩展程序”
-4. 选择本项目目录
-5. 将“书签快存”固定到工具栏，打开任意网页后点击扩展图标
+环境要求：Node.js 20.19 或更高版本。
 
-本项目不需要构建步骤，也不需要额外依赖。
+```bash
+npm install
+npm run dev
+```
+
+`npm run dev` 会监听源码变化并持续构建 `dist/`。修改后需要在 `chrome://extensions/` 中重新加载扩展。
+
+## 检查与构建
+
+```bash
+npm run lint
+npm run test
+npm run format:check
+npm run build
+```
+
+生产构建输出到 `dist/`，其中包含 Chrome 可直接加载的 `manifest.json`、`popup.html` 和哈希静态资源。
+
+## 安装到 Chrome
+
+1. 执行 `npm install && npm run build`
+2. 打开 Chrome，访问 `chrome://extensions/`
+3. 打开右上角的“开发者模式”
+4. 点击“加载已解压的扩展程序”
+5. 选择本项目的 `dist/` 目录
+6. 将“书签快存”固定到工具栏
+
+## 代码结构
+
+```text
+public/              Manifest 等扩展静态资源
+src/components/      Popup 展示组件和递归书签树
+src/domain/          书签树、位置计算和配置迁移等纯逻辑
+src/popup/           Popup 应用入口和流程编排
+src/services/        Chrome tabs、bookmarks、storage API 封装
+src/styles/          全局样式
+tests/               领域逻辑和组件交互测试
+```
