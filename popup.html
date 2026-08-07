@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>书签快存</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="popup-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6.5 4.75A2.25 2.25 0 0 1 8.75 2.5h6.5a2.25 2.25 0 0 1 2.25 2.25v16.1a.65.65 0 0 1-1.04.52L12 15.92l-4.46 5.45a.65.65 0 0 1-1.04-.52V4.75Z" />
+              <path d="m9.7 9.65 1.55 1.55 3.05-3.05" />
+            </svg>
+          </div>
+          <div>
+            <h1>书签快存</h1>
+            <p>保存此刻，稍后继续</p>
+          </div>
+        </div>
+        <button class="icon-button" id="refresh-button" type="button" aria-label="刷新书签文件夹" title="刷新书签文件夹">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 11a8.1 8.1 0 0 0-14.9-3L3 11" />
+            <path d="M3 5v6h6" />
+            <path d="M4 13a8.1 8.1 0 0 0 14.9 3L21 13" />
+            <path d="M21 19v-6h-6" />
+          </svg>
+        </button>
+      </header>
+
+      <section class="page-preview" aria-label="当前页面">
+        <div class="site-favicon" id="site-favicon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="8.5" />
+            <path d="M3.8 9h16.4M3.8 15h16.4M12 3.5c2.1 2.3 3.1 5.15 3.1 8.5S14.1 18.2 12 20.5c-2.1-2.3-3.1-5.15-3.1-8.5S9.9 5.8 12 3.5Z" />
+          </svg>
+        </div>
+        <div class="page-copy">
+          <strong id="page-title">正在读取当前页面...</strong>
+          <span id="page-url">请稍候</span>
+        </div>
+      </section>
+
+      <form id="bookmark-form" novalidate>
+        <div class="field-group location-group">
+          <div class="field-label-row location-label-row">
+            <label>保存位置</label>
+            <button class="text-button" id="open-manager" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13Z" />
+                <path d="M8 8h8M8 12h8M8 16h5" />
+              </svg>
+              打开书签管理器
+            </button>
+          </div>
+          <div class="custom-position location-picker">
+            <div class="position-list-heading">
+              <span>选择文件夹或书签位置</span>
+              <span class="location-summary" id="location-summary">正在读取...</span>
+            </div>
+            <ul class="location-tree" id="location-tree" role="tree" aria-label="书签保存位置"></ul>
+            <p class="tree-empty" id="tree-empty" hidden>没有可用的书签文件夹</p>
+          </div>
+        </div>
+
+        <button class="save-button" id="save-button" type="submit" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l3 3v13a2 2 0 0 1-2 2Z" />
+            <path d="M7 21v-6h10v6M7 3v4h8" />
+          </svg>
+          <span>保存到书签</span>
+        </button>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+      </form>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>
