@@ -24,6 +24,7 @@ interface LocationOptionProps {
   type: "folder" | "bookmark" | "position";
   selected: boolean;
   onSelect: (location: BookmarkLocation) => void;
+  onDoubleClick?: () => void;
 }
 
 function isSelected(
@@ -48,6 +49,7 @@ function LocationOption({
   type,
   selected,
   onSelect,
+  onDoubleClick,
 }: LocationOptionProps) {
   const Icon =
     type === "folder" ? Folder : type === "bookmark" ? Bookmark : Minus;
@@ -58,6 +60,7 @@ function LocationOption({
       role="treeitem"
       aria-selected={selected}
       onClick={() => onSelect({ folderId, target })}
+      onDoubleClick={onDoubleClick}
     >
       <Icon
         className={`${styles.itemIcon} ${type === "folder" ? styles.folderIcon : ""}`}
@@ -127,6 +130,7 @@ function FolderNode({
           type="folder"
           selected={isSelected(location, node.id, topTarget)}
           onSelect={onSelect}
+          onDoubleClick={children.length ? () => onToggle(node.id) : undefined}
         />
       </div>
 

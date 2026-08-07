@@ -62,6 +62,31 @@ describe("BookmarkLocationTree", () => {
     });
   });
 
+  it("selects a folder on click and toggles it on double click", () => {
+    const onSelect = vi.fn();
+    const onToggle = vi.fn();
+    render(
+      <BookmarkLocationTree
+        root={root}
+        location={{ folderId: "1", target: { type: "top" } }}
+        summary="Bookmarks Bar · 顶部"
+        expandedFolderIds={new Set(["1"])}
+        onSelect={onSelect}
+        onToggle={onToggle}
+      />,
+    );
+
+    const plans = screen.getByRole("treeitem", { name: /Plans/ });
+    fireEvent.click(plans);
+    expect(onSelect).toHaveBeenCalledWith({
+      folderId: "10",
+      target: { type: "top" },
+    });
+
+    fireEvent.doubleClick(plans);
+    expect(onToggle).toHaveBeenCalledWith("10");
+  });
+
   it("uses a dedicated toggle action for nested folders", () => {
     const onToggle = vi.fn();
     render(
