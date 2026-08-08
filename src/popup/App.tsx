@@ -40,6 +40,7 @@ import {
   getActivePage,
   getSystemLanguage,
   openBookmarkManager,
+  closePopup,
 } from "../services/tabs";
 import styles from "./App.module.css";
 
@@ -53,16 +54,12 @@ type StatusKey =
   | "readFailed"
   | "locationSaveFailed"
   | "pageUnavailable"
-  | "movedExisting"
-  | "alreadyPositioned"
-  | "savedTo"
   | "invalidUrl"
   | "saveFailed";
 
 interface Status {
   key: StatusKey;
-  type: "success" | "error" | "";
-  path?: string;
+  type: "error" | "";
 }
 
 function getErrorStatusKey(error: unknown): StatusKey {
@@ -108,8 +105,6 @@ export function App() {
   );
   const statusMessage = useMemo(() => {
     if (!status.key) return "";
-    if (status.key === "savedTo")
-      return messages.savedTo(status.path || messages.targetFolder);
     return messages[status.key];
   }, [messages, status]);
 
@@ -209,24 +204,16 @@ export function App() {
         );
         if (moveIndex !== existingIndex) {
           await moveBookmark(duplicate.id, location.folderId, moveIndex);
-          setStatus({ key: "movedExisting", type: "success" });
-        } else {
-          setStatus({ key: "alreadyPositioned", type: "success" });
         }
       } else {
         await createPageBookmark(location.folderId, position.index, page);
-        const folder = folders.find((item) => item.id === location.folderId);
-        setStatus({
-          key: "savedTo",
-          type: "success",
-          path: folder?.path || messages.targetFolder,
-        });
       }
 
       setLocation(resolvedLocation);
       await saveSettings({ location: resolvedLocation, language });
       const [nextRoot] = await getBookmarkTree();
       if (nextRoot) setRoot(nextRoot);
+      closePopup();
     } catch (error) {
       console.error(error);
       setStatus({ key: getErrorStatusKey(error), type: "error" });

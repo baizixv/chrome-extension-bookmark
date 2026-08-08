@@ -14,6 +14,10 @@ export function getSystemLanguage(): string {
   return chrome.i18n.getUILanguage();
 }
 
+export function closePopup(): void {
+  window.close();
+}
+
 export async function openBookmarkManager(): Promise<void> {
   await chrome.tabs.create({ url: "chrome://bookmarks/" });
 }

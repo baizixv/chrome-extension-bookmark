@@ -39,11 +39,8 @@ export interface Messages {
   readFailed: string;
   locationSaveFailed: string;
   pageUnavailable: string;
-  movedExisting: string;
-  alreadyPositioned: string;
   invalidUrl: string;
   saveFailed: string;
-  targetFolder: string;
   bookmarksBar: string;
   otherBookmarks: string;
   mobileBookmarks: string;
@@ -52,7 +49,6 @@ export interface Messages {
   locationTop: (path: string) => string;
   locationBottom: (path: string) => string;
   locationBefore: (path: string, bookmark: string) => string;
-  savedTo: (path: string) => string;
 }
 
 const zhCN: Messages = {
@@ -87,11 +83,8 @@ const zhCN: Messages = {
   readFailed: "读取书签失败，请刷新后重试",
   locationSaveFailed: "保存位置设置失败",
   pageUnavailable: "当前页面或目标文件夹不可用",
-  movedExisting: "已将已有书签移动到新位置",
-  alreadyPositioned: "这个书签已经在指定位置",
   invalidUrl: "此页面类型不支持收藏为书签",
   saveFailed: "保存失败，请确认目标位置仍然存在",
-  targetFolder: "目标文件夹",
   bookmarksBar: "书签栏",
   otherBookmarks: "其他书签",
   mobileBookmarks: "移动书签",
@@ -100,7 +93,6 @@ const zhCN: Messages = {
   locationTop: (path) => `${path} · 顶部`,
   locationBottom: (path) => `${path} · 末尾`,
   locationBefore: (path, bookmark) => `${path} · 在「${bookmark}」之前`,
-  savedTo: (path) => `已保存到「${path}」`,
 };
 
 const en: Messages = {
@@ -135,11 +127,8 @@ const en: Messages = {
   readFailed: "Could not read bookmarks. Refresh and try again.",
   locationSaveFailed: "Could not save the location setting",
   pageUnavailable: "The current page or target folder is unavailable",
-  movedExisting: "Moved the existing bookmark to the new position",
-  alreadyPositioned: "This bookmark is already in the selected position",
   invalidUrl: "This page type cannot be saved as a bookmark",
   saveFailed: "Could not save. Check that the target location still exists.",
-  targetFolder: "target folder",
   bookmarksBar: "Bookmarks Bar",
   otherBookmarks: "Other Bookmarks",
   mobileBookmarks: "Mobile Bookmarks",
@@ -148,7 +137,6 @@ const en: Messages = {
   locationTop: (path) => `${path} · Top`,
   locationBottom: (path) => `${path} · Bottom`,
   locationBefore: (path, bookmark) => `${path} · Before “${bookmark}”`,
-  savedTo: (path) => `Saved to “${path}”`,
 };
 
 export function resolveLanguage(
