@@ -1,30 +1,32 @@
-# 书签快存
+# Bookmark Quick Save
 
-一个使用 React、TypeScript 和 Vite 构建的 Chrome Manifest V3 扩展。它将目标文件夹和插入位置合并到同一棵书签树中，用一次选择完成当前页面的收藏。
+English | [简体中文](README.zh-CN.md)
 
-## 功能
+A Chrome Manifest V3 extension built with React, TypeScript, and Vite. It combines the destination folder and insertion position in a single bookmark tree, allowing you to save the current page with one selection.
 
-- 自动读取当前活动标签页的标题、网址和网站图标
-- 在固定显示的树形位置框中合并选择文件夹和插入位置
-- 默认展开最常用的 Bookmarks Bar，其他目录可逐级展开、折叠
-- 单击文件夹保存到顶部，双击文件夹展开或折叠，点击书签则插入到该书签之前，也可选择目录末尾
-- 支持跟随系统、简体中文和 English，并使用 Chrome 标准 Manifest 本地化
-- 记住上次选择的完整保存位置和语言偏好，并兼容旧版配置迁移
-- 当前文件夹存在相同网址时，直接把已有书签移动到新位置
-- 支持直接打开 Chrome 书签管理器
+## Features
 
-## 开发
+- Automatically reads the active tab's title, URL, and favicon
+- Combines folder and insertion-position selection in an always-visible bookmark tree
+- Expands the commonly used Bookmarks Bar by default while allowing other folders to be expanded or collapsed as needed
+- Click a folder to save at the top, double-click a folder to expand or collapse it, click a bookmark to insert before it, or choose the end of a folder
+- Supports system language, Simplified Chinese, and English using standard Chrome manifest localization
+- Remembers the complete last-used save location and language preference, with migration support for legacy settings
+- Moves an existing bookmark when the same URL is already present in the destination folder
+- Opens Chrome's bookmark manager directly
 
-环境要求：Node.js 20.19 或更高版本。
+## Development
+
+Requires Node.js 20.19 or later.
 
 ```bash
 npm install
 npm run dev
 ```
 
-`npm run dev` 会监听源码变化并持续构建 `dist/`。修改后需要在 `chrome://extensions/` 中重新加载扩展。
+`npm run dev` watches source files and continuously rebuilds `dist/`. Reload the extension from `chrome://extensions/` after making changes.
 
-## 检查与构建
+## Checks and production build
 
 ```bash
 npm run lint
@@ -33,41 +35,41 @@ npm run format:check
 npm run build
 ```
 
-生产构建输出到 `dist/`，其中包含 Chrome 可直接加载的 `manifest.json`、`popup.html` 和哈希静态资源。
+The production build is written to `dist/`, including the Chrome-ready `manifest.json`, `popup.html`, and hashed static assets.
 
-## 安装到 Chrome
+## Install in Chrome
 
-1. 执行 `npm install && npm run build`
-2. 打开 Chrome，访问 `chrome://extensions/`
-3. 打开右上角的“开发者模式”
-4. 点击“加载已解压的扩展程序”
-5. 选择本项目的 `dist/` 目录
-6. 将“书签快存”固定到工具栏
+1. Run `npm install && npm run build`.
+2. Open `chrome://extensions/` in Chrome.
+3. Enable **Developer mode** in the top-right corner.
+4. Click **Load unpacked**.
+5. Select this project's `dist/` directory.
+6. Pin **Bookmark Quick Save** to the toolbar.
 
-## Chrome Web Store 发布
+## Chrome Web Store publishing
 
-发布注册信息、商店文案、权限说明、隐私表单答案和上传清单见：
+Registration details, store listing copy, permission explanations, privacy-form answers, and the upload checklist are available in:
 
 - [`docs/CHROME_WEB_STORE_PUBLISHING.md`](docs/CHROME_WEB_STORE_PUBLISHING.md)
 - [`PRIVACY.md`](PRIVACY.md)
 
-商店图标、截图和宣传图位于 `store-assets/`。更新 UI 后可以重新生成截图：
+Store icons, screenshots, and promotional images are located in `store-assets/`. Regenerate the screenshots after updating the UI:
 
 ```bash
 npm run store:capture
 ```
 
-## 代码结构
+## Project structure
 
 ```text
-public/              Manifest、_locales 等扩展静态资源
-src/components/      Popup 展示组件、设置菜单和递归书签树
-src/domain/          书签树、位置计算和配置迁移等纯逻辑
-src/i18n/            类型化中英文 UI 词典与语言解析
-src/popup/           Popup 应用入口和流程编排
-src/services/        Chrome tabs、bookmarks、storage API 封装
-src/store-preview/   商店截图的真实 popup 预览与模拟数据
-src/styles/          全局样式
-store-assets/        商店图标、截图、宣传图和图标源文件
-tests/               领域逻辑和组件交互测试
+public/              Manifest, _locales, and other extension assets
+src/components/      Popup UI components, settings menu, and recursive bookmark tree
+src/domain/          Bookmark tree, position calculations, settings migration, and other pure logic
+src/i18n/            Typed Chinese and English UI dictionaries and language resolution
+src/popup/           Popup application entry point and workflow orchestration
+src/services/        Chrome tabs, bookmarks, and storage API wrappers
+src/store-preview/   Store screenshot preview using the real popup UI and mock data
+src/styles/          Global styles
+store-assets/        Store icons, screenshots, promotional images, and icon source files
+tests/               Domain logic and component interaction tests
 ```
